@@ -1,0 +1,53 @@
+name: "OxyPages Deploy"
+description: "Deploy a static site or built folder to OxyPages from GitHub Actions"
+author: "OxyPages"
+branding:
+  icon: "upload-cloud"
+  color: "purple"
+
+inputs:
+  api-key:
+    description: "Your OxyPages API key (oxy_...). Create one at oxypages.com under Profile -> API Keys and store it as a repository secret."
+    required: true
+  site-id:
+    description: >
+      The id of the site to deploy into. Find it in the site's URL in the
+      dashboard, or from GET /v1/sites. Required on purpose: an action that
+      silently created a new site whenever this was missing would make a fresh
+      site on every push and quietly burn the account's site-creation budget.
+    required: true
+  build-dir:
+    description: "Directory to deploy. This is what gets zipped and uploaded."
+    required: false
+    default: "./"
+  build-command:
+    description: "Command to run before deploying, e.g. 'npm run build'. Dependencies are installed first when a package.json is present. Leave empty for a site that needs no build."
+    required: false
+  install-command:
+    description: "Command used to install dependencies before build-command runs."
+    required: false
+    default: "npm ci"
+  exclude:
+    description: "Comma-separated names and glob patterns to leave out of the upload."
+    required: false
+    default: "node_modules,.git,.github,*.md,package*.json,package-lock.json,.DS_Store,.env,.env.*"
+  api-url:
+    description: "API base URL. Override only for a self-hosted or staging deployment."
+    required: false
+    default: "https://api.oxypages.com"
+
+outputs:
+  site-url:
+    description: "The live URL of the deployed site"
+  deployment-number:
+    description: "The version number this deploy created, as shown in Version History"
+  pages:
+    description: "How many pages the deploy published"
+  files:
+    description: "How many files were uploaded"
+  bytes:
+    description: "Total size of the deploy in bytes"
+
+runs:
+  using: "node20"
+  main: "dist/index.js"

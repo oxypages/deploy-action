@@ -1,0 +1,19 @@
+{
+  "name": "oxypages-deploy-action",
+  "version": "1.0.0",
+  "description": "Deploy a static site or built folder to OxyPages from GitHub Actions",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ncc build src/index.js -o dist --minify",
+    "test": "node test/run.js && node test/e2e.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/exec": "^1.1.1"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.38.3",
+    "fflate": "^0.8.2"
+  }
+}
