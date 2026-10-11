@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - name: Unit tests (zip writer, exclude matcher)
+        run: npm test
+      - name: End-to-end (bundled action against a stubbed API)
+        run: node test/e2e.js
+
+      # dist/ is committed because Actions runs the bundle directly. Rebuild it
+      # and fail if it differs from what was committed, so the shipped bundle
+      # can never quietly lag behind src/.
+      - name: dist/ is in sync with src/
+        run: |
+          npm run build
+          if ! git diff --exit-code --stat dist/; then
+            echo "::error::dist/ is stale. Run 'npm run build' and commit the result."
+            exit 1
+          fi
